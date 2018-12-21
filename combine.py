@@ -1,4 +1,6 @@
 import pyzed.sl as sl # has zed stuff
+import positional_tracking.tracking_viewer as tv
+
 
 def main():
 	zed = sl.Camera() # creates camera object
@@ -26,11 +28,16 @@ def main():
     mapping_parameters.save_texture = True ;  # Scene texture will be recorded
     filter_params = sl.MeshFilterParameters()
     filter_params.set(sl.MESH_FILTER.MESH_FILTER_LOW)
-    tracking_parameters = sl.TrackingParameters()
+    transform = sl.Transform()
+    tracking_params = sl.TrackingParameters(transform)
     zed.enable_tracking(tracking_parameters)
     zed.enable_spatial_mapping(mapping_parameters)
     mesh = sl.Mesh() 
     timer=0
+
+    #viewer 
+    viewer = tv.PyTrackingViewer()
+    viewer.init()
 
     while not exit_app:
         if zed.grab() == sl.ERROR_CODE.SUCCESS:
@@ -52,6 +59,11 @@ def main():
             oz = round(zed_pose.get_orientation(py_orientation).get()[2], 3)
             ow = round(zed_pose.get_orientation(py_orientation).get()[3], 3)
             print("Orientation: ox: {0}, oy:  {1}, oz: {2}, ow: {3}\n".format(ox, oy, oz, ow))
+
+            #viewer for pose
+            pose_data = zed_pose.pose_data(sl.Transform())
+            viewer.update_zed_position(pose_data)
+            viewer.update_text(text_translation, text_rotation, tracking_state)
 
     zed.extract_whole_mesh(mesh)
     mesh.filter(filter_params)
