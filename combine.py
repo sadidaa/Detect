@@ -32,7 +32,7 @@ def main():
     mesh = sl.Mesh() 
     timer=0
 
-    while !exit_app:
+    while not exit_app:
         if zed.grab() == sl.ERROR_CODE.SUCCESS:
             zed.retrieve_image(image, sl.VIEW.VIEW_LEFT)
             zed.retrieve_image(depth_for_display, sl.VIEW.VIEW_DEPTH) #depth that can be viewed.
